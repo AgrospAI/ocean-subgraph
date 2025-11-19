@@ -5,13 +5,13 @@ RUN apt-get update && \
     ln -sf /usr/bin/python3 /usr/bin/python && \
     rm -fr /var/lib/apt/lists/*
 
-FROM base as builder
+FROM base AS builder
 COPY package*.json /usr/src/app/
 WORKDIR /usr/src/app/
 ENV NODE_ENV=production
 RUN npm ci
 
-FROM base as runner
+FROM base AS runner
 ENV NODE_ENV=production
 COPY . /usr/src/app
 WORKDIR /usr/src/app/
