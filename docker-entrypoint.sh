@@ -17,4 +17,3 @@ then
   sleep 3
   touch /ocean-subgraph/ready
 fi
-tail -f /dev/null
