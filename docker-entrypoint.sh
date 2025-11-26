@@ -11,7 +11,6 @@ then
   while [ ! -f "/ocean-contracts/artifacts/ready" ]; do
     sleep 2
   done
-  export ADDRESS_FILE="/ocean-contracts/artifacts/address.json"
   cd /usr/src/app/
   npm run quickstart:barge
   sleep 3
