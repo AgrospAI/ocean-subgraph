@@ -79,7 +79,7 @@
     "@oceanprotocol/lib": "^2.7.0"
   },
   "dependencies": {
-    "@oceanprotocol/contracts": "^2.0.3",
+    "@oceanprotocol/contracts": "file:./contracts",
     "@graphprotocol/graph-cli": "^0.71.0",
     "@graphprotocol/graph-ts": "^0.31.0"
   },
