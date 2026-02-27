@@ -18,13 +18,13 @@ templates:
         - ERC20Template
       abis:
         - name: ERC20Template
-          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/templates/ERC20Template.sol/ERC20Template.json
+          file: __OCEAN_ARTIFACTS__/templates/ERC20Template.sol/ERC20Template.json
         - name: ERC20TemplateEnterprise
-          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/templates/ERC20TemplateEnterprise.sol/ERC20TemplateEnterprise.json
+          file: __OCEAN_ARTIFACTS__/templates/ERC20TemplateEnterprise.sol/ERC20TemplateEnterprise.json
         - name: ERC20
           file: ./abis/ERC20.json
         - name: ERC20Roles
-          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/utils/ERC20Roles.sol/ERC20Roles.json
+          file: __OCEAN_ARTIFACTS__/utils/ERC20Roles.sol/ERC20Roles.json
       eventHandlers:
         - event: OrderStarted(indexed address,address,uint256,uint256,uint256,indexed address,uint256)
           handler: handleOrderStarted
@@ -68,11 +68,11 @@ templates:
         - ERC20Template3
       abis:
         - name: ERC20Template3
-          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/templates/ERC20Template3.sol/ERC20Template3.json
+          file: __OCEAN_ARTIFACTS__/templates/ERC20Template3.sol/ERC20Template3.json
         - name: ERC20
           file: ./abis/ERC20.json
         - name: ERC20Roles
-          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/utils/ERC20Roles.sol/ERC20Roles.json
+          file: __OCEAN_ARTIFACTS__/utils/ERC20Roles.sol/ERC20Roles.json
       eventHandlers:
         - event: PredictionSubmitted(indexed address,indexed uint256,uint256)
           handler: handlePredictionSubmitted
@@ -103,9 +103,9 @@ templates:
         - ERC721Template
       abis:
         - name: ERC721Template
-          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/templates/ERC721Template.sol/ERC721Template.json
+          file: __OCEAN_ARTIFACTS__/templates/ERC721Template.sol/ERC721Template.json
         - name: ERC721RolesAddress
-          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/utils/ERC721RolesAddress.sol/ERC721RolesAddress.json
+          file: __OCEAN_ARTIFACTS__/utils/ERC721RolesAddress.sol/ERC721RolesAddress.json
         - name: ERC20
           file: ./abis/ERC20.json
       eventHandlers:
@@ -154,7 +154,7 @@ templates:
         - Dispenser
       abis:
         - name: Dispenser
-          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/dispenser/Dispenser.sol/Dispenser.json
+          file: __OCEAN_ARTIFACTS__/pools/dispenser/Dispenser.sol/Dispenser.json
         - name: ERC20
           file: ./abis/ERC20.json
       eventHandlers:
@@ -185,7 +185,7 @@ templates:
         - FixedRateExchange
       abis:
         - name: FixedRateExchange
-          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/fixedRate/FixedRateExchange.sol/FixedRateExchange.json
+          file: __OCEAN_ARTIFACTS__/pools/fixedRate/FixedRateExchange.sol/FixedRateExchange.json
         - name: ERC20
           file: ./abis/ERC20.json
       eventHandlers:
@@ -225,11 +225,11 @@ dataSources:
         - ERC721Factory
       abis:
         - name: ERC721Template
-          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/templates/ERC721Template.sol/ERC721Template.json
+          file: __OCEAN_ARTIFACTS__/templates/ERC721Template.sol/ERC721Template.json
         - name: ERC20Template
-          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/templates/ERC20Template.sol/ERC20Template.json
+          file: __OCEAN_ARTIFACTS__/templates/ERC20Template.sol/ERC20Template.json
         - name: ERC721Factory
-          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/ERC721Factory.sol/ERC721Factory.json
+          file: __OCEAN_ARTIFACTS__/ERC721Factory.sol/ERC721Factory.json
         - name: ERC20
           file: ./abis/ERC20.json
       eventHandlers:
@@ -258,7 +258,7 @@ dataSources:
         - FactoryRouter
       abis:
         - name: FactoryRouter
-          file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/pools/FactoryRouter.sol/FactoryRouter.json
+          file: __OCEAN_ARTIFACTS__/pools/FactoryRouter.sol/FactoryRouter.json
         - name: ERC20
           file: ./abis/ERC20.json
       eventHandlers:
@@ -276,3 +276,27 @@ dataSources:
           handler: handleDispenserContractAdded
         - event: DispenserContractRemoved(indexed address,indexed address)
           handler: handleDispenserContractRemoved
+  - kind: ethereum/contract
+    name: MetadataRequestManager
+    network: __NETWORK__
+    source:
+      address: __METADATAREQUESTMANAGERADDRESS__
+      abi: MetadataRequestManager
+      startBlock: __STARTBLOCK__
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/metadataRequestManager.ts
+      entities:
+        - MetadataRequest
+      abis:
+        - name: MetadataRequestManager
+          file: __OCEAN_ARTIFACTS__/utils/MetadataRequestManager.sol/MetadataRequestManager.json
+      eventHandlers:
+        - event: RequestCreated(uint256,indexed address,address,indexed address,uint8[],string[],uint256)
+          handler: handleRequestCreated
+        - event: RequestVoted(indexed uint256,indexed address,bool,uint256)
+          handler: handleRequestVoted
+        - event: RequestVotingFinished(indexed uint256,uint8)
+          handler: handleRequestVotingFinished

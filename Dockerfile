@@ -6,14 +6,15 @@ RUN apt-get update && \
     rm -fr /var/lib/apt/lists/*
 
 FROM base AS builder
-COPY package*.json /usr/src/app/
+COPY ./ocean-subgraph/package*.json /usr/src/app/
+
 WORKDIR /usr/src/app/
-ENV NODE_ENV=production
+# ENV NODE_ENV=production # Enabling this skips devDependencies => Doesn't work
 RUN npm ci
 
 FROM base AS runner
 ENV NODE_ENV=production
-COPY . /usr/src/app
+COPY ./ocean-subgraph/ /usr/src/app
 WORKDIR /usr/src/app/
 COPY --from=builder /usr/src/app/node_modules/ /usr/src/app/node_modules/
 ENV DEPLOY_SUBGRAPH=true \

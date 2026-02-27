@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 const fs = require('fs')
-let addresses = require('@oceanprotocol/contracts/addresses/address.json')
 
 async function replaceContractAddresses() {
   // load addresses file first
@@ -8,9 +7,12 @@ async function replaceContractAddresses() {
     console.error('Missing network..')
     return
   }
+  let addresses
   if (process.env.ADDRESS_FILE) {
     console.log('Using custom ADDRESS_FILE instead of ocean-contracts npm dep')
     addresses = JSON.parse(fs.readFileSync(process.env.ADDRESS_FILE, 'utf8'))
+  } else {
+    addresses = require('../contracts/addresses/address.json')
   }
 
   for (const network in addresses) {
@@ -29,6 +31,16 @@ async function replaceContractAddresses() {
         subgraph += '  ' + lines[line] + '\n'
       }
     }
+
+    let artifactsFolder =
+      './node_modules/@oceanprotocol/contracts/artifacts/contracts'
+    if (process.env.OCEAN_ARTIFACTS_FOLDER) {
+      artifactsFolder = `${process.env.OCEAN_ARTIFACTS_FOLDER}/contracts`
+    }
+
+    console.log(`Reading contract artifacts from ${artifactsFolder}`)
+
+    subgraph = subgraph.replace(/__OCEAN_ARTIFACTS__/g, artifactsFolder)
 
     subgraph = subgraph.replace(/__NETWORK__/g, network)
     subgraph = subgraph.replace(
@@ -68,6 +80,12 @@ async function replaceContractAddresses() {
       /__DFREWARDSADDRESS__/g,
       "'" + addresses[network].DFRewards + "'"
     )
+
+    subgraph = subgraph.replace(
+      /__METADATAREQUESTMANAGERADDRESS__/g,
+      "'" + addresses[network].MetadataRequestManager + "'"
+    )
+
     fs.writeFileSync('subgraph.yaml', subgraph, 'utf8')
   }
 }

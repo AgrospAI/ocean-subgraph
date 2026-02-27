@@ -14,7 +14,7 @@
       - veAllocate
     abis:
       - name: veAllocate
-        file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/ve/veAllocate.sol/veAllocate.json
+        file: __OCEAN_ARTIFACTS__/ve/veAllocate.sol/veAllocate.json
     eventHandlers:
       - event: AllocationSet(indexed address,indexed address,indexed uint256,uint256)
         handler: handleAllocationSet
@@ -37,7 +37,7 @@
       - veOCEAN
     abis:
       - name: veOCEAN
-        file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/ve/veOCEAN.vy/veOCEAN.json
+        file: __OCEAN_ARTIFACTS__/ve/veOCEAN.vy/veOCEAN.json
     eventHandlers:
       - event: Deposit(indexed address,uint256,indexed uint256,int128,uint256)
         handler: handleDeposit
@@ -62,7 +62,7 @@
       - veDelegation
     abis:
       - name: veDelegation
-        file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/ve/veDelegation.vy/veDelegation.json
+        file: __OCEAN_ARTIFACTS__/ve/veDelegation.vy/veDelegation.json
     eventHandlers:
       - event: DelegateBoost(indexed address,indexed address,indexed uint256,uint256,uint256,uint256)
         handler: handleDelegation
@@ -87,7 +87,7 @@
       - veFeeDistributor
     abis:
       - name: veFeeDistributor
-        file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/ve/veFeeDistributor.vy/veFeeDistributor.json
+        file: __OCEAN_ARTIFACTS__/ve/veFeeDistributor.vy/veFeeDistributor.json
     eventHandlers:
       - event: Claimed(indexed address,uint256,uint256,uint256)
         handler: handleClaimed
@@ -110,7 +110,7 @@
       - DFRewards
     abis:
       - name: DFRewards
-        file: ./node_modules/@oceanprotocol/contracts/artifacts/contracts/df/DFRewards.sol/DFRewards.json
+        file: __OCEAN_ARTIFACTS__/df/DFRewards.sol/DFRewards.json
     eventHandlers:
       - event: Allocated(address[],uint256[],address)
         handler: handleAllocated
