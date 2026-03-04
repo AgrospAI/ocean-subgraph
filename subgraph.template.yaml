@@ -294,13 +294,13 @@ dataSources:
         - name: MetadataRequestManager
           file: __OCEAN_ARTIFACTS__/utils/MetadataRequestManager.sol/MetadataRequestManager.json
       eventHandlers:
-        - event: RequestCreated(uint256 id, indexed address erc721, address did, indexed address requester, uint8[] requestTypes, string[] data, uint256 expiresAt)
+        - event: RequestCreated(uint256,indexed address,address,indexed address,uint8[],string[],uint256)
           handler: handleRequestCreated
-        - event: RequestVoted(indexed uint256 id, indexed address voter, bool[] approved, uint256 weight)
+        - event: RequestVoted(indexed uint256,indexed address,bool[],uint256)
           handler: handleRequestVoted
-        - event: RequestCancelled(indexed uint256 id)
+        - event: RequestCancelled(indexed uint256)
           handler: handleRequestCancelled
-        - event: RequestVotingFinished(indexed uint256 id, uint8 status)
+        - event: RequestVotingFinished(indexed uint256,uint8)
           handler: handleRequestVotingFinished
-        - event: RequestApplied(indexed uint256 id, uint8[] requestTypes, string[] data)
+        - event: RequestApplied(indexed uint256,uint8[],string[])
           handler: handleRequestApplied

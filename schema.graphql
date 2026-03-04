@@ -775,11 +775,11 @@ type PredictContract @entity{
 
 
 type MetadataRequest @entity {
-  id: ID! # Use the 'id' from your contract
+  id: ID!
   erc721: Bytes!
   did: Bytes!
   requester: Bytes!
-  status: Int! # 0: Pending, 1: Approved, etc.
+  status: Int!
   expiresAt: BigInt!
   createdAt: BigInt!
   votes: [Vote!] @derivedFrom(field: "request")
@@ -789,6 +789,6 @@ type Vote @entity {
   id: ID! # transactionHash + logIndex
   request: MetadataRequest!
   voter: Bytes!
-  approved: Boolean!
+  approved: [Boolean!]
   weight: BigInt!
 }

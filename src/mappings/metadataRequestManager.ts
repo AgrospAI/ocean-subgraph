@@ -5,7 +5,7 @@ import {
   RequestCreated,
   RequestVoted,
   RequestVotingFinished
-} from '../@types/MetadataRequestManager'
+} from '../@types/MetadataRequestManager/MetadataRequestManager'
 import { MetadataRequest, Vote } from '../@types/schema'
 
 export function handleRequestCreated(event: RequestCreated): void {
@@ -13,7 +13,9 @@ export function handleRequestCreated(event: RequestCreated): void {
   request.erc721 = event.params.erc721
   request.did = event.params.did
   request.requester = event.params.requester
+
   request.status = 0 // Pending
+
   request.expiresAt = event.params.expiresAt
   request.createdAt = event.block.timestamp
   request.save()
@@ -26,11 +28,13 @@ export function handleRequestVoted(event: RequestVoted): void {
     event.transaction.hash.toHex() +
     '-' +
     event.logIndex.toString()
+
   let vote = new Vote(id)
   vote.request = event.params.id.toString()
   vote.voter = event.params.voter
   vote.approved = event.params.approved
   vote.weight = event.params.weight
+
   vote.save()
 }
 
@@ -68,7 +72,6 @@ export function handleRequestApplied(event: RequestApplied): void {
     ])
     return
   }
-  // status already set by handleRequestVotingFinished
-  // just save the applied data if you have those fields in your schema
+
   request.save()
 }
