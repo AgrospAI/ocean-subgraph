@@ -1,24 +1,52 @@
 import { log } from '@graphprotocol/graph-ts'
+
+import { BigInt } from "@graphprotocol/graph-ts"
 import {
   RequestApplied,
   RequestCancelled,
   RequestCreated,
   RequestVoted,
-  RequestVotingFinished
+  RequestVotingFinished,
 } from '../@types/MetadataRequestManager/MetadataRequestManager'
-import { MetadataRequest, Vote } from '../@types/schema'
+  
+import { MetadataRequest, SubRequest, Vote } from '../@types/schema'
 
 export function handleRequestCreated(event: RequestCreated): void {
-  let request = new MetadataRequest(event.params.id.toString())
-  request.erc721 = event.params.erc721
+  // 1. Create the Parent Request
+  let requestId = event.params.id.toString()
+  let request = new MetadataRequest(requestId)
+  
+  request.erc721 = event.params.erc721.toHexString()
+
   request.did = event.params.did
   request.requester = event.params.requester
-
   request.status = 0 // Pending
-
   request.expiresAt = event.params.expiresAt
   request.createdAt = event.block.timestamp
+  
+  // Save the parent first so the children can reference it
   request.save()
+
+  // 2. Create the SubRequests
+  let types = event.params.requestTypes
+  let data = event.params.data
+
+  // Safety check to ensure arrays match (though contract should enforce this)
+  for (let i = 0; i < types.length; i++) {
+    // Unique ID for each sub-item, e.g., "1-0", "1-1"
+    let subRequestId = requestId + "-" + i.toString()
+    let subRequest = new SubRequest(subRequestId)
+    
+    subRequest.request = requestId // Links back to MetadataRequest
+    subRequest.requestType = types[i]
+    subRequest.data = data[i]
+    
+    // Initialize weights
+    subRequest.yesWeight = BigInt.fromI32(0)
+    subRequest.noWeight = BigInt.fromI32(0)
+    
+    subRequest.save()
+  }
 }
 
 export function handleRequestVoted(event: RequestVoted): void {

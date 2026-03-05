@@ -120,6 +120,8 @@ type Nft @entity{
 
     nftData: [NftData!] @derivedFrom(field: "nft")
     transferHistory: [NftTransferHistory!] @derivedFrom(field: "nft")
+
+    metadataRequests: [MetadataRequest!]! @derivedFrom(field: "erc721")
 }
 
 type NftData @entity{
@@ -773,16 +775,27 @@ type PredictContract @entity{
   eventIndex: Int!
 }
 
-
 type MetadataRequest @entity {
-  id: ID!
-  erc721: Bytes!
-  did: Bytes!
+  id: ID! # The uint256 ID from the contract
+  erc721: Nft!
+  did: String!
   requester: Bytes!
-  status: Int!
-  expiresAt: BigInt!
+  status: Int! # Maps to the Status enum
   createdAt: BigInt!
+  decidedAt: BigInt # Nullable until finalized/cancelled
+  expiresAt: BigInt!
+  
+  subRequests: [SubRequest!]! @derivedFrom(field: "request")
   votes: [Vote!] @derivedFrom(field: "request")
+}
+
+type SubRequest @entity {
+  id: ID!
+  request: MetadataRequest!
+  requestType: Int!
+  data: String!
+  yesWeight: BigInt!
+  noWeight: BigInt!
 }
 
 type Vote @entity {
