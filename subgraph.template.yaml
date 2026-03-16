@@ -294,7 +294,7 @@ dataSources:
         - name: MetadataRequestManager
           file: __OCEAN_ARTIFACTS__/utils/MetadataRequestManager.sol/MetadataRequestManager.json
       eventHandlers:
-        - event: RequestCreated(uint256,indexed address,string,indexed address,uint8[],string[],uint256)
+        - event: RequestCreated(uint256,indexed address,indexed address,indexed address,uint8[],string[],uint256)
           handler: handleRequestCreated
         - event: RequestVoted(indexed uint256,indexed address,bool[],uint256)
           handler: handleRequestVoted

@@ -121,7 +121,7 @@ type Nft @entity{
     nftData: [NftData!] @derivedFrom(field: "nft")
     transferHistory: [NftTransferHistory!] @derivedFrom(field: "nft")
 
-    metadataRequests: [MetadataRequest!]! @derivedFrom(field: "erc721")
+    metadataRequests: [MetadataRequest!]! @derivedFrom(field: "datasetAddress")
 }
 
 type NftData @entity{
@@ -777,8 +777,8 @@ type PredictContract @entity{
 
 type MetadataRequest @entity {
   id: ID! # The uint256 ID from the contract
-  erc721: Nft!
-  did: String!
+  datasetAddress: Nft!
+  algorithmAddress: Nft!
   requester: Bytes!
   status: Int! # Maps to the Status enum
   createdAt: BigInt!
