@@ -784,7 +784,7 @@ type MetadataRequest @entity {
   createdAt: BigInt!
   decidedAt: BigInt # Nullable until finalized/cancelled
   expiresAt: BigInt!
-  
+  reason: String!
   subRequests: [SubRequest!]! @derivedFrom(field: "request")
   votes: [Vote!] @derivedFrom(field: "request")
 }
@@ -793,7 +793,7 @@ type SubRequest @entity {
   id: ID!
   request: MetadataRequest!
   requestType: Int!
-  data: String!
+  data: String
   yesWeight: BigInt!
   noWeight: BigInt!
 }
@@ -802,6 +802,7 @@ type Vote @entity {
   id: ID! # transactionHash + logIndex
   request: MetadataRequest!
   voter: Bytes!
-  approved: [Boolean!]
+  inFavourBitmap: BigInt!
   weight: BigInt!
+  data: String
 }

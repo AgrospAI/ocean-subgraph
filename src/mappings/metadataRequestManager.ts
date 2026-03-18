@@ -18,8 +18,8 @@ export function handleRequestCreated(event: RequestCreated): void {
 
   request.datasetAddress = event.params.datasetAddress.toHexString()
   request.algorithmAddress = event.params.algorithmAddress.toHexString()
-
   request.requester = event.params.requester
+  request.reason = event.params.reason;
   request.status = 0 // Pending
   request.expiresAt = event.params.expiresAt
   request.createdAt = event.block.timestamp
@@ -60,7 +60,7 @@ export function handleRequestVoted(event: RequestVoted): void {
   let vote = new Vote(id)
   vote.request = event.params.id.toString()
   vote.voter = event.params.voter
-  vote.approved = event.params.approved
+  vote.inFavourBitmap = event.params.inFavourBitmap
   vote.weight = event.params.weight
 
   vote.save()
