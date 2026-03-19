@@ -74,7 +74,7 @@ export function handleRequestCancelled(event: RequestCancelled): void {
     ])
     return
   }
-  request.status = 4 // Cancelled
+  request.status = 1 // Cancelled
   request.save()
 }
 
