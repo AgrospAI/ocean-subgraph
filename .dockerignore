@@ -5,3 +5,5 @@ contracts
 build
 coverage
 __mocks__
+.github
+.git

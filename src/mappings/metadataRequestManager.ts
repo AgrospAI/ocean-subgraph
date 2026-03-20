@@ -19,7 +19,7 @@ export function handleRequestCreated(event: RequestCreated): void {
   request.datasetAddress = event.params.datasetAddress.toHexString()
   request.algorithmAddress = event.params.algorithmAddress.toHexString()
   request.requester = event.params.requester
-  request.reason = event.params.reason;
+  request.reason = event.params.reason
   request.status = 0 // Pending
   request.expiresAt = event.params.expiresAt
   request.createdAt = event.block.timestamp
@@ -50,20 +50,44 @@ export function handleRequestCreated(event: RequestCreated): void {
 }
 
 export function handleRequestVoted(event: RequestVoted): void {
-  let id =
-    event.params.id.toString() +
+  let requestId = event.params.id.toString()
+  let voter = event.params.voter
+  let weight = event.params.weight
+  let bitmap = event.params.inFavourBitmap
+
+  let voteId =
+    requestId +
     '-' +
     event.transaction.hash.toHex() +
     '-' +
     event.logIndex.toString()
-
-  let vote = new Vote(id)
-  vote.request = event.params.id.toString()
-  vote.voter = event.params.voter
-  vote.inFavourBitmap = event.params.inFavourBitmap
-  vote.weight = event.params.weight
-
+  let vote = new Vote(voteId)
+  vote.request = requestId
+  vote.voter = voter
+  vote.inFavourBitmap = bitmap
+  vote.weight = weight
   vote.save()
+
+  let bitmapPrimitive = bitmap.toI32()
+
+  for (let i = 0; i < 100; i++) {
+    let subRequestId = requestId + '-' + i.toString()
+    let subRequest = SubRequest.load(subRequestId)
+
+    // If we can't find the next sub-request, we've reached the end
+    if (subRequest == null) break
+
+    // BITMAP LOGIC
+    let isYes = (bitmapPrimitive >> subRequest.requestType) & 1
+
+    if (isYes == 1) {
+      subRequest.yesWeight = subRequest.yesWeight.plus(weight)
+    } else {
+      subRequest.noWeight = subRequest.noWeight.plus(weight)
+    }
+
+    subRequest.save()
+  }
 }
 
 export function handleRequestCancelled(event: RequestCancelled): void {

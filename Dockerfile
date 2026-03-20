@@ -10,13 +10,13 @@ COPY ./ocean-subgraph/package*.json /usr/src/app/
 
 WORKDIR /usr/src/app/
 # ENV NODE_ENV=production # Enabling this skips devDependencies => Doesn't work
-RUN npm ci
+RUN npm ci --only=production
 
 FROM base AS runner
 ENV NODE_ENV=production
-COPY ./ocean-subgraph/ /usr/src/app
 WORKDIR /usr/src/app/
-COPY --from=builder /usr/src/app/node_modules/ /usr/src/app/node_modules/
+COPY --from=builder /usr/src/app/node_modules/ ./node_modules/
+COPY ./ocean-subgraph/ /usr/src/app
 ENV DEPLOY_SUBGRAPH=true \
     IPFS=""\
     GRAPH_NODE=""
