@@ -789,11 +789,17 @@ type MetadataRequest @entity {
   votes: [Vote!] @derivedFrom(field: "request")
 }
 
+type UserCounter @entity {
+  id: ID!
+  pendingCount: Int!
+  totalCount: Int!
+}
+
 type SubRequest @entity {
   id: ID!
   request: MetadataRequest!
   requestType: Int!
-  data: String
+  data: String!
   yesWeight: BigInt!
   noWeight: BigInt!
 }

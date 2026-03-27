@@ -9,10 +9,21 @@ import {
   RequestVotingFinished
 } from '../@types/MetadataRequestManager/MetadataRequestManager'
 
-import { MetadataRequest, SubRequest, Vote } from '../@types/schema'
+import { MetadataRequest, Nft, SubRequest, UserCounter, Vote } from '../@types/schema'
+
+function getOrCreateUserCounter(userAddress: string): UserCounter {
+  let counter = UserCounter.load(userAddress)
+  
+  if (counter == null) {
+    counter = new UserCounter(userAddress)
+    counter.pendingCount = 0
+    counter.totalCount = 0
+  }
+
+  return counter
+}
 
 export function handleRequestCreated(event: RequestCreated): void {
-  // 1. Create the Parent Request
   let requestId = event.params.id.toString()
   let request = new MetadataRequest(requestId)
 
@@ -23,35 +34,42 @@ export function handleRequestCreated(event: RequestCreated): void {
   request.status = 0 // Pending
   request.expiresAt = event.params.expiresAt
   request.createdAt = event.block.timestamp
-
-  // Save the parent first so the children can reference it
   request.save()
 
-  // 2. Create the SubRequests
+  // Create the SubRequests
   let types = event.params.requestTypes
   let data = event.params.data
 
-  // Safety check to ensure arrays match (though contract should enforce this)
   for (let i = 0; i < types.length; i++) {
-    // Unique ID for each sub-item, e.g., "1-0", "1-1"
     let subRequestId = requestId + '-' + i.toString()
     let subRequest = new SubRequest(subRequestId)
 
     subRequest.request = requestId // Links back to MetadataRequest
     subRequest.requestType = types[i]
     subRequest.data = data[i]
-
-    // Initialize weights
     subRequest.yesWeight = BigInt.fromI32(0)
     subRequest.noWeight = BigInt.fromI32(0)
 
     subRequest.save()
   }
+
+  const nft = Nft.load(event.params.datasetAddress.toHexString())
+  if (nft !== null) {
+    let counter = getOrCreateUserCounter(nft.owner)
+    counter.pendingCount += 1
+    counter.totalCount += 1
+    counter.save()
+  }
+
+  let counter = getOrCreateUserCounter(request.requester.toHexString())
+  counter.pendingCount += 1
+  counter.save()
 }
 
 export function handleRequestVoted(event: RequestVoted): void {
   let requestId = event.params.id.toString()
   let voter = event.params.voter
+  let data = event.params.data
   let weight = event.params.weight
   let bitmap = event.params.inFavourBitmap
 
@@ -64,6 +82,7 @@ export function handleRequestVoted(event: RequestVoted): void {
   let vote = new Vote(voteId)
   vote.request = requestId
   vote.voter = voter
+  vote.data = data
   vote.inFavourBitmap = bitmap
   vote.weight = weight
   vote.save()
@@ -100,6 +119,18 @@ export function handleRequestCancelled(event: RequestCancelled): void {
   }
   request.status = 1 // Cancelled
   request.save()
+
+  const nft = Nft.load(request.datasetAddress)
+  if (nft !== null) {
+    let counter = getOrCreateUserCounter(nft.owner)
+    counter.pendingCount -= 1
+    counter.totalCount -= 1
+    counter.save()
+  }
+
+  let counter = getOrCreateUserCounter(request.requester.toHexString())
+  counter.pendingCount -= 1
+  counter.save()
 }
 
 export function handleRequestVotingFinished(
@@ -114,6 +145,17 @@ export function handleRequestVotingFinished(
   }
   request.status = event.params.status
   request.save()
+
+  const nft = Nft.load(request.datasetAddress)
+  if (nft !== null) {
+    let counter = getOrCreateUserCounter(nft.owner)
+    counter.pendingCount -= 1
+    counter.save()
+  }
+
+  let counter = getOrCreateUserCounter(request.requester.toHexString())
+  counter.pendingCount -= 1
+  counter.save()
 }
 
 export function handleRequestApplied(event: RequestApplied): void {
