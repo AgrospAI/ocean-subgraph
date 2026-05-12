@@ -20,6 +20,7 @@ async function replaceContractAddresses() {
       console.log('Skipping ' + network)
       continue
     }
+
     console.log('Creating subgraph.yaml for ' + network)
     let subgraph = fs.readFileSync('./subgraph.template.yaml', 'utf8')
     const subgraphVe = fs.readFileSync('./subgraph_ve.template.yaml', 'utf8')
@@ -36,6 +37,12 @@ async function replaceContractAddresses() {
       './node_modules/@oceanprotocol/contracts/artifacts/contracts'
     if (process.env.OCEAN_ARTIFACTS_FOLDER) {
       artifactsFolder = `${process.env.OCEAN_ARTIFACTS_FOLDER}/contracts`
+    }
+
+    if (process.env.START_BLOCK) {
+      console.log('Using custom START_BLOCK for every smart contract')
+      startBlock = process.env.START_BLOCK
+      addresses[network].startBlock = startBlock
     }
 
     console.log(`Reading contract artifacts from ${artifactsFolder}`)

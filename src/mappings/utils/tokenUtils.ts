@@ -14,18 +14,12 @@ import { ZERO_ADDRESS } from './constants'
 export function createToken(address: Address, isDatatoken: boolean): Token {
   log.debug('started creating token with address: {}', [address.toHexString()])
   const token = new Token(address.toHexString())
-  const contract = ERC20.bind(address)
-  const name = contract.try_name()
-  if (name.reverted) token.name = ''
-  else token.name = name.value
-  const symbol = contract.try_symbol()
-  if (name.reverted) token.symbol = ''
-  else token.symbol = symbol.value
+  // Default everything first — safe if RPC calls below fail at transport level
+  token.name = address.toHexString()
+  token.symbol = 'UNKNOWN'
   token.address = address.toHexString()
   token.isDatatoken = isDatatoken
-  const decimals = contract.try_decimals()
-  if (decimals.reverted) token.decimals = 18
-  else token.decimals = decimals.value
+  token.decimals = 18
   token.lastPriceToken = ZERO_ADDRESS
   token.lastPriceValue = BigDecimal.zero()
   token.orderCount = BigInt.zero()
@@ -35,6 +29,21 @@ export function createToken(address: Address, isDatatoken: boolean): Token {
   token.tx = ''
   token.eventIndex = 0
   token.templateId = BigInt.zero()
+
+  // Save BEFORE any eth_calls so entity exists even if RPC crashes below
+  token.save()
+
+  const contract = ERC20.bind(address)
+  
+  const name = contract.try_name()
+  if (!name.reverted) token.name = name.value
+  
+  const symbol = contract.try_symbol()       // fix: was checking name.reverted
+  if (!symbol.reverted) token.symbol = symbol.value
+  
+  const decimals = contract.try_decimals()
+  if (!decimals.reverted) token.decimals = decimals.value
+  
   token.save()
   return token
 }

@@ -192,10 +192,10 @@ type User @entity {
   freSwaps: [FixedRateExchangeSwap!] @derivedFrom(field: "by")
   
   "total number of orders made by this user"       
-  totalOrders: BigInt!
+  totalOrders: BigInt! @column(defaultValue: "0")
 
   "total number of orders made on assets owned by this user"       
-  totalSales: BigInt!
+  totalSales: BigInt! @column(defaultValue: "0")
 }
 
 type FixedRateExchange @entity {

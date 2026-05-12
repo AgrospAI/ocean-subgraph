@@ -29,6 +29,11 @@ export function getOPC(): OPC {
   let globalStats = OPC.load(GLOBAL_ID)
   if (!globalStats) {
     globalStats = new OPC(GLOBAL_ID)
+    globalStats.swapOceanFee = BigDecimal.fromString("0")
+    globalStats.swapNonOceanFee = BigDecimal.fromString("0")
+    globalStats.orderFee = BigDecimal.fromString("0")
+    globalStats.providerFee = BigDecimal.fromString("0")
+    globalStats.approvedTokens = []
     globalStats.save()
   }
   return globalStats

@@ -8,7 +8,7 @@ import {
   DispenserContractAdded,
   DispenserContractRemoved
 } from '../@types/FactoryRouter/FactoryRouter'
-import { BigInt } from '@graphprotocol/graph-ts'
+import { BigDecimal, BigInt, log } from '@graphprotocol/graph-ts'
 import { FixedRateExchange, Dispenser } from '../@types/templates'
 import { getOPC, getTemplates } from './utils/globalUtils'
 import { weiToDecimal } from './utils/generic'
@@ -37,40 +37,25 @@ export function handleOPCFeeChanged(event: OPCFeeChanged): void {
 }
 
 export function handleTokenAdded(event: TokenAdded): void {
-  const contract = FactoryRouter.bind(event.address)
-  const oceanFees = contract.try_getOPCFees()
-  if (oceanFees.reverted) return
-
   const opc = getOPC()
-  const decimals = BigInt.fromI32(18).toI32()
-  opc.swapOceanFee = weiToDecimal(
-    oceanFees.value.value0.toBigDecimal(),
-    decimals
-  )
-  opc.swapNonOceanFee = weiToDecimal(
-    oceanFees.value.value1.toBigDecimal(),
-    decimals
-  )
 
-  const newOrderFee = contract.try_getOPCConsumeFee()
-  if (newOrderFee.reverted) return
+  // DO NOT make any eth_calls here — the RPC node (light client)
+  // cannot serve historical state at early block heights.
+  // Fee fields are maintained by handleOPCFeeChanged; 
+  // getOPC() already initializes them to zero on first creation.
 
-  const newProviderFee = contract.try_getOPCProviderFee()
-  if (newProviderFee.reverted) return
-  opc.orderFee = weiToDecimal(newOrderFee.value.toBigDecimal(), decimals)
-  opc.providerFee = weiToDecimal(newProviderFee.value.toBigDecimal(), decimals)
-
-  // add token to approvedTokens
+  // Add token to approvedTokens
   let existingTokens: string[]
   if (!opc.approvedTokens) existingTokens = []
   else existingTokens = opc.approvedTokens as string[]
-  if (!existingTokens.includes(event.params.token.toHexString())) {
+
+  const tokenAddress = event.params.token.toHexString()
+  if (!existingTokens.includes(tokenAddress)) {
     const newToken = getToken(event.params.token, false)
     existingTokens.push(newToken.id)
   }
 
   opc.approvedTokens = existingTokens
-
   opc.save()
 }
 

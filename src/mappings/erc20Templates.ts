@@ -45,9 +45,22 @@ export function handleOrderStarted(event: OrderStarted): void {
   order.consumer = consumer.id
 
   if (token.nft) {
-    const nft = Nft.load(token.nft as string) as Nft
-    const nftOwner = getUser(nft.owner)
-    order.nftOwner = nftOwner.id
+    const nft = Nft.load(token.nft as string)
+    if (nft !== null) {
+      const nftOwner = getUser(nft.owner)
+      order.nftOwner = nftOwner.id
+
+      nft.orderCount = nft.orderCount.plus(integer.ONE);
+      nft.save()
+
+      const owner = getUser(nft.owner);
+      owner.totalSales = owner.totalSales.plus(integer.ONE);
+      owner.save();
+    } else {
+      order.nftOwner = getUser(Address.zero().toHex()).id;
+    }
+  } else {
+    order.nftOwner = getUser(Address.zero().toHex()).id;
   }
 
   const payer = getUser(event.params.payer.toHex())
@@ -94,16 +107,6 @@ export function handleOrderStarted(event: OrderStarted): void {
   order.save()
   token.save()
   addOrder()
-  if (token.nft) {
-    const nft = Nft.load(token.nft as string) as Nft
-    if (nft) {
-      nft.orderCount = nft.orderCount.plus(integer.ONE)
-      nft.save()
-    }
-    const owner = getUser(nft.owner)
-    owner.totalSales = owner.totalSales.plus(integer.ONE)
-    owner.save()
-  }
 }
 
 export function handlerOrderReused(event: OrderReused): void {
