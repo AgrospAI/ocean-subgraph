@@ -1,8 +1,9 @@
-features:
-  - grafting
-graft:
-  base: QmUXVsVcuA7P6KteCSdQvQrPU6UXJcr5amP2tpWV631LkQ
-  block: 12000000
+# Uncomment this for devnet
+# features:
+#   - grafting
+# graft:
+#   base: QmU9xMJJZoCUmmdXDQkfEvM7TFtREST5hrY8Ph7yZGtzMY
+#   block: 12525900
 specVersion: 0.0.3
 description: Ocean provides data sharing through IDOs
 repository: https://github.com/oceanprotocol/ocean-subgraph
